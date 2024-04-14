@@ -5,21 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>???</title>
 <style>
-  #speedBtn {
+  body {
+        background-color: #121418;
+    }
+  #progress-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 6px;
+    background-color: #fff;
+    transition: width 0.05s linear;
+    width: 100%; /* 初始宽度 */
+  }
+  .button {
     position: fixed;
     top: 10px;
-    right: 10px;
     padding: 10px 20px;
-    background-color: #fff;
-    color: #08f;
-    border: 2px solid #08f;
+    background-color: #121418;
+    color: #fff;
+    border: 2px solid #fff;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
   }
-  #speedBtn:hover {
-    background-color: #08f;
-    color: #fff;
+  .button:hover {
+    background-color: #fff;
+    color: #121418;
   }
   #text {
     position: absolute;
@@ -27,42 +38,35 @@
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 18px;
-    color: black;
+    color: #fff;
     text-align: center;
   }
   .option {
-    color: blue;
+    color: #999;
     text-decoration: underline;
     cursor: pointer;
+  }
+    .option:hover {
+    color: #fff;
   }
 </style>
 </head>
 <body>
 
-<button id="speedBtn" onmousedown="changeSpeed(event)" oncontextmenu="event.preventDefault();">速度：x1</button>
+<div id="progress-bar"></div>
+
+<button id="speedBtn" class="button" style="right: 10px;" onmousedown="changeSpeed(event)" oncontextmenu="event.preventDefault();">文字速度：x1</button>
+
+<button id="c2CBtn" class="button" style="left: 10px;" onmousedown="changeC2C(event)" oncontextmenu="event.preventDefault();">点击继续：否</button>
+
 
 <div id="text">Loading...</div>
 
 <script>
   var speed=1
-  var speeds = [0.5, 0.75, 1, 1.25, 1.5, 2, 3];
+  var speeds = [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3];
   var currentSpeedIndex = 2; // 默认速度为1
   var speedBtn = document.getElementById('speedBtn');
-
-function getCookie(name) {
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.startsWith(name + '=')) {
-            return cookie.substring(name.length + 1);
-        }
-    }
-    return null;
-}
-
-const talkedCookie = getCookie('talked');
-
-let talked = talkedCookie && !isNaN(parseInt(talkedCookie)) ? parseInt(talkedCookie) : 0;
 
   function changeSpeed(event) {
     event.preventDefault();
@@ -75,28 +79,111 @@ let talked = talkedCookie && !isNaN(parseInt(talkedCookie)) ? parseInt(talkedCoo
   }
 
   function updateSpeed() {
-    speedBtn.textContent = "速度：x" + speeds[currentSpeedIndex];
+    speedBtn.textContent = "文字速度：x" + speeds[currentSpeedIndex];
     speed = speeds[currentSpeedIndex];
   }
 
   updateSpeed(); // 初始化速度显示
 
+  var c2C=0
+    function changeC2C() {
+        c2C = c2C === 0 ? 1 : 0;
+        document.getElementById("c2CBtn").innerText = "点击继续：" + (c2C === 1 ? "是" : "否");
+    }
 
+function getCookie(name) {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(name + '=')) {
+            return cookie.substring(name.length + 1);
+        }
+    }
+    return null;
+}
 
-if (talked === 0) {
-function showText(text, duration, callback) {
+const talkedCookie = getCookie('talked2');
+
+let talked2 = talkedCookie && !isNaN(parseInt(talkedCookie)) ? parseInt(talkedCookie) : 0;
+
+if (talked2 === 0) {
+
+const progressBar = document.getElementById('progress-bar');
+
+function showText(text, callback) {
   const textElement = document.getElementById('text');
-  textElement.innerText = text;
-  if (duration !== Infinity) {
-    setTimeout(() => {
+  textElement.innerText = '';
+  let currentIndex = 0;
+  let elapsedTime = 0;
+  let totalTime = (text.length * 100 + 1200) / speed; // 存储总时长
+  let progressBarTimerId; // 进度条更新计时器 ID
+
+  function resetElapsedTime() {
+    elapsedTime = -1000000;
+  }
+
+  function displayNextCharacter() {
+    if (currentIndex < text.length) {
+      textElement.innerText += text[currentIndex];
+      currentIndex++;
+      timerId = setTimeout(displayNextCharacter, 1000 / (speed * 12));
+    } else {
+      clearTimeout(timerId); // 清除字符更新计时器
+      elapsedTime = totalTime - elapsedTime; // 使用剩余时间更新elapsedTime
+      if (c2C === 0) {
+        progressBarTimerId = setInterval(updateProgressBar, 50); // 启动进度条更新计时器
+      }
+      progressBarTimerId = setInterval(checkElapsedTime, 50); // 启动检查elapsedTime计时器
+    }
+  }
+
+  function updateProgressBar() {
+    elapsedTime -= 50 * speed; // 更新elapsedTime
+    const progress = elapsedTime / totalTime; // 进度
+    progressBar.style.width = (progress * 108) + '%';
+  }
+
+document.addEventListener("mousedown", function(event) {
+    // 检查是否是鼠标左键按下事件（左键的keyCode是1）
+    if (event.button === 0) {
+        // 获取鼠标指针的坐标
+        var mouseX = event.clientX;
+        var mouseY = event.clientY;
+
+        // 检查鼠标指针是否悬浮在任何按钮上
+        var buttons = document.getElementsByTagName("button");
+        var isHoveringOnButton = false;
+        for (var i = 0; i < buttons.length; i++) {
+            var button = buttons[i];
+            var buttonRect = button.getBoundingClientRect();
+            if (mouseX >= buttonRect.left && mouseX <= buttonRect.right &&
+                mouseY >= buttonRect.top && mouseY <= buttonRect.bottom) {
+                isHoveringOnButton = true;
+                break;
+            }
+        }
+
+        if (!isHoveringOnButton && c2C === 1) {
+            elapsedTime = -1000000;
+        }
+    }
+});
+
+
+  function checkElapsedTime() {
+    if (elapsedTime <= -200) {
+      clearInterval(progressBarTimerId); // 停止进度条更新计时器
+        progressBar.style.width = "100%";
       textElement.innerText = '';
       if (callback) {
         callback();
       }
-    }, 1 / speed * duration);
+    }
   }
+  displayNextCharacter();
 }
-function showSelect(question, options, callback) {
+
+function showSelect(question, options, callback) { //以后得加检测选择前字符显示完毕后直接出选项
   const textElement = document.getElementById('text');
   textElement.innerText = question;
   
@@ -124,35 +211,36 @@ function executeNextInstruction(instruction) {
     instruction();
   }
 }
+
 const targets = {};
 const instructions = {
-  a1: () => {showText("“有人吗？”", 5000, () => executeNextInstruction(instructions.a2));},
-  a2: () => {showText("你向着虚空问道。", 2000, () => executeNextInstruction(instructions.a3));},
-  a3: () => {showText("窸窸窣窣的声音从看起来不可能存在生命的黑暗中传来。", 5000, () => executeNextInstruction(instructions.a4));},
-  a4: () => {showText("“我是□□”，一个声音回答道。", 2500, () => executeNextInstruction(instructions.a5));},
-  a5: () => {showText("你决定问它…", 1000, () => executeNextInstruction(instructions.as));},
+  a1: () => {showText("“有人吗？”", () => executeNextInstruction(instructions.a2));},
+  a2: () => {showText("你向着虚空问道。", () => executeNextInstruction(instructions.a3));},
+  a3: () => {showText("窸窸窣窣的声音从看起来不可能存在生命的黑暗中传来。", () => executeNextInstruction(instructions.a4));},
+  a4: () => {showText("“我是□□”，一个声音回答道。", () => executeNextInstruction(instructions.a5));},
+  a5: () => {showText("你决定问它…", () => executeNextInstruction(instructions.as));},
   as: () => {showSelect("你决定问它…", {"as1": "“你是谁？”", "as2": "“介绍下自己吧”", "as3": "“你喜欢什么或喜欢做什么？”", "as4": "“你有病吗？”"});},
   bs: () => {showSelect("你决定问它…", {"as1": "“你是谁？”", "as2": "“介绍下自己吧”", "as3": "“你喜欢什么或喜欢做什么？”", "as4": "“你有病吗？”", "bs1": "“我没有想问的了”"});},
-  ba1: () => {showText("“我是□□”，那个声音回答道。", 2000, () => executeNextInstruction(instructions.bs));},
-  bb1: () => {showText("“嗯…”它说。", 1500, () => executeNextInstruction(instructions.bb2));},
-  bb2: () => {showText("“说实在的吧，其实”", 2200, () => executeNextInstruction(instructions.bb3));},
-  bb3: () => {showText("“我对自己没多少了解”", 2300, () => executeNextInstruction(instructions.bb4));},
-  bb4: () => {showText("“你信吧？”", 1300, () => executeNextInstruction(instructions.bb5));},
-  bb5: () => {showText("“所以你还是换个问题吧”", 1800, () => executeNextInstruction(instructions.bs));},
-  bc1: () => {showText("“以我对自己不多的了解”它说道。", 2500, () => executeNextInstruction(instructions.bc2));},
-  bc2: () => {showText("“我确信我应该会喜欢一些有趣而扣人心弦的故事、小说等”", 4000, () => executeNextInstruction(instructions.bc3));},
+  ba1: () => {showText("“我是□□”，那个声音回答道。", () => executeNextInstruction(instructions.bs));},
+  bb1: () => {showText("“嗯…”它说。", () => executeNextInstruction(instructions.bb2));},
+  bb2: () => {showText("“说实在的吧，其实”", () => executeNextInstruction(instructions.bb3));},
+  bb3: () => {showText("“我对自己没多少了解”", () => executeNextInstruction(instructions.bb4));},
+  bb4: () => {showText("“你信吧？”", () => executeNextInstruction(instructions.bb5));},
+  bb5: () => {showText("“所以你还是换个问题吧”", () => executeNextInstruction(instructions.bs));},
+  bc1: () => {showText("“以我对自己不多的了解”它说道。", () => executeNextInstruction(instructions.bc2));},
+  bc2: () => {showText("“我确信我应该会喜欢一些有趣而扣人心弦的故事、小说等”", () => executeNextInstruction(instructions.bc3));},
   bc3: () => {showText("“以及美丽的画作、广阔神秘的宇宙和充满活力的事物”", 3200, () => executeNextInstruction(instructions.bc4));},
-  bc4: () => {showText("“我还会画画、写写字什么的”", 2800, () => executeNextInstruction(instructions.bc5));},
-  bc5: () => {showText("“不过我现在没办法给你露一手”", 3200, () => executeNextInstruction(instructions.bs));},
-  bd1: () => {showText("“正确！”它快速答道。", 1600, () => executeNextInstruction(instructions.bd2));},
-  bd2: () => {showText("“我有一种病，当别人对我说一样的话时，我总是给予同样的回答”", 5000, () => executeNextInstruction(instructions.bd3));},
-  bd3: () => {showText("“开个玩笑，其实是因为虚空的通讯等一系列困难的问题，准确的说虚空其实算是半个留言电话”", 6500, () => executeNextInstruction(instructions.bd4));},
-  bd4: () => {showText("“希望你能了解其中的道理”", 2500, () => executeNextInstruction(instructions.bs));},
-  c1: () => {showText("“好罢”它说道。", 1600, () => executeNextInstruction(instructions.c2));},
-  c2: () => {showText("“很高兴能够与你聊天”", 2400, () => executeNextInstruction(instructions.c3));},
-  c3: () => {showText("“或许以后我们无法能够再次通过虚空取得与这个我的联系，不过我已经把你当朋友了”", 6000, () => executeNextInstruction(instructions.c4));},
-  c4: () => {showText("“那就再见咯”", 1600, () => executeNextInstruction(instructions.c5));},
-  c5: () => {document.cookie = "talked=1; expires=Fri, 31 Dec 9999 23:59:59 GMT" ;showText("【通讯中断】", Infinity);}
+  bc4: () => {showText("“我还会画画、写写字什么的”", () => executeNextInstruction(instructions.bc5));},
+  bc5: () => {showText("“不过我现在没办法给你露一手”", () => executeNextInstruction(instructions.bs));},
+  bd1: () => {showText("“正确！”它快速答道。", () => executeNextInstruction(instructions.bd2));},
+  bd2: () => {showText("“我有一种病，当别人对我说一样的话时，我总是给予同样的回答”", () => executeNextInstruction(instructions.bd3));},
+  bd3: () => {showText("“开个玩笑，其实是因为虚空的通讯等一系列困难的问题，准确的说虚空其实算是半个留言电话”", () => executeNextInstruction(instructions.bd4));},
+  bd4: () => {showText("“希望你能了解其中的道理”", () => executeNextInstruction(instructions.bs));},
+  c1: () => {showText("“好罢”它说道。", () => executeNextInstruction(instructions.c2));},
+  c2: () => {showText("“很高兴能够与你聊天”", () => executeNextInstruction(instructions.c3));},
+  c3: () => {showText("“或许以后我们无法能够再次通过虚空取得与这个我的联系，不过我已经把你当朋友了”", () => executeNextInstruction(instructions.c4));},
+  c4: () => {showText("“那就再见咯”", () => executeNextInstruction(instructions.c5));},
+  c5: () => {document.cookie = "talked2=1; expires=Fri, 31 Dec 9999 23:59:59 GMT" ;showText("【通讯中断】");}
 }
 targets["as1"] = () => executeNextInstruction(instructions.ba1);
 targets["as2"] = () => executeNextInstruction(instructions.bb1);
@@ -161,19 +249,83 @@ targets["as4"] = () => executeNextInstruction(instructions.bd1);
 targets["bs1"] = () => executeNextInstruction(instructions.c1);
 executeNextInstruction(instructions.a1);
 } else {
-function showText(text, duration, callback) {
+
+const progressBar = document.getElementById('progress-bar');
+
+function showText(text, callback) {
   const textElement = document.getElementById('text');
-  textElement.innerText = text;
-  if (duration !== Infinity) {
-    setTimeout(() => {
+  textElement.innerText = '';
+  let currentIndex = 0;
+  let elapsedTime = 0;
+  let totalTime = (text.length * 100 + 1200) / speed; // 存储总时长
+  let progressBarTimerId; // 进度条更新计时器 ID
+
+  function resetElapsedTime() {
+    elapsedTime = -1000000;
+  }
+
+  function displayNextCharacter() {
+    if (currentIndex < text.length) {
+      textElement.innerText += text[currentIndex];
+      currentIndex++;
+      timerId = setTimeout(displayNextCharacter, 1000 / (speed * 12));
+    } else {
+      clearTimeout(timerId); // 清除字符更新计时器
+      elapsedTime = totalTime - elapsedTime; // 使用剩余时间更新elapsedTime
+      if (c2C === 0) {
+        progressBarTimerId = setInterval(updateProgressBar, 50); // 启动进度条更新计时器
+      }
+      progressBarTimerId = setInterval(checkElapsedTime, 50); // 启动检查elapsedTime计时器
+    }
+  }
+
+  function updateProgressBar() {
+    elapsedTime -= 50 * speed; // 更新elapsedTime
+    const progress = elapsedTime / totalTime; // 进度
+    progressBar.style.width = (progress * 108) + '%';
+  }
+
+document.addEventListener("mousedown", function(event) {
+    // 检查是否是鼠标左键按下事件（左键的keyCode是1）
+    if (event.button === 0) {
+        // 获取鼠标指针的坐标
+        var mouseX = event.clientX;
+        var mouseY = event.clientY;
+
+        // 检查鼠标指针是否悬浮在任何按钮上
+        var buttons = document.getElementsByTagName("button");
+        var isHoveringOnButton = false;
+        for (var i = 0; i < buttons.length; i++) {
+            var button = buttons[i];
+            var buttonRect = button.getBoundingClientRect();
+            if (mouseX >= buttonRect.left && mouseX <= buttonRect.right &&
+                mouseY >= buttonRect.top && mouseY <= buttonRect.bottom) {
+                isHoveringOnButton = true;
+                break;
+            }
+        }
+
+        if (!isHoveringOnButton && c2C === 1) {
+            elapsedTime = -1000000;
+        }
+    }
+});
+
+
+  function checkElapsedTime() {
+    if (elapsedTime <= -200) {
+      clearInterval(progressBarTimerId); // 停止进度条更新计时器
+        progressBar.style.width = "100%";
       textElement.innerText = '';
       if (callback) {
         callback();
       }
-    }, 1 / speed * duration);
+    }
   }
+  displayNextCharacter();
 }
-function showSelect(question, options, callback) {
+
+function showSelect(question, options, callback) { //以后得加检测选择前字符显示完毕后直接出选项
   const textElement = document.getElementById('text');
   textElement.innerText = question;
   
@@ -201,11 +353,13 @@ function executeNextInstruction(instruction) {
     instruction();
   }
 }
+
 const targets = {};
 const instructions = {
-  a1: () => {showText("“有人吗？”", 5000, () => executeNextInstruction(instructions.a2));},
-  a2: () => {showText("你向着虚空问道。", 5000, () => executeNextInstruction(instructions.a3));},
-  a3: () => {showText("什么也没有发生。", Infinity);},
+  a1: () => {showText("“有人吗？”", () => executeNextInstruction(instructions.a2));},
+  a2: () => {showText("你向着虚空问道。", () => executeNextInstruction(instructions.a3));},
+  a3: () => {showText("但什么都没有发生。");},
+
 }
 targets["as1"] = () => executeNextInstruction(instructions.ba1);
 targets["as2"] = () => executeNextInstruction(instructions.bb1);
@@ -214,7 +368,6 @@ targets["as4"] = () => executeNextInstruction(instructions.bd1);
 targets["bs1"] = () => executeNextInstruction(instructions.c1);
 executeNextInstruction(instructions.a1);
 };
-
 </script>
 
 </body>
