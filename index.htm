@@ -234,7 +234,7 @@ const instructions = {
   bb5: () => {showText("“所以你还是换个问题吧”", () => executeNextInstruction(instructions.bs));},
   bc1: () => {showText("“以我对自己不多的了解”它说道。", () => executeNextInstruction(instructions.bc2));},
   bc2: () => {showText("“我确信我应该会喜欢一些有趣而扣人心弦的故事、小说等”", () => executeNextInstruction(instructions.bc3));},
-  bc3: () => {showText("“以及美丽的画作、广阔神秘的宇宙和充满活力的事物”", 3200, () => executeNextInstruction(instructions.bc4));},
+  bc3: () => {showText("“以及美丽的画作、广阔神秘的宇宙和充满活力的事物”", () => executeNextInstruction(instructions.bc4));},
   bc4: () => {showText("“我还会画画、写写字什么的”", () => executeNextInstruction(instructions.bc5));},
   bc5: () => {showText("“不过我现在没办法给你露一手”", () => executeNextInstruction(instructions.bs));},
   bd1: () => {showText("“正确！”它快速答道。", () => executeNextInstruction(instructions.bd2));},
