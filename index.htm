@@ -3,28 +3,219 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Star</title>
+<title>Interactive Text</title>
 <style>
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+  #speedBtn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 10px 20px;
+    background-color: #fff;
+    color: #08f;
+    border: 2px solid #08f;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  #speedBtn:hover {
+    background-color: #08f;
+    color: #fff;
   }
   #text {
-    font-size: 12px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    color: black;
     text-align: center;
+  }
+  .option {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
   }
 </style>
 </head>
 <body>
-<div id="text">你好</div>
+
+<button id="speedBtn" onmousedown="changeSpeed(event)" oncontextmenu="event.preventDefault();">速度：x1</button>
+
+<div id="text">Loading...</div>
 
 <script>
-  setTimeout(function() {
-    document.getElementById("text").innerText = "你好吗？";
-  }, 5000);
+  var speed=1
+  var speeds = [0.5, 0.75, 1, 1.25, 1.5, 2, 3];
+  var currentSpeedIndex = 2; // 默认速度为1
+  var speedBtn = document.getElementById('speedBtn');
+
+function getCookie(name) {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(name + '=')) {
+            return cookie.substring(name.length + 1);
+        }
+    }
+    return null;
+}
+
+const talkedCookie = getCookie('talked');
+
+let talked = talkedCookie && !isNaN(parseInt(talkedCookie)) ? parseInt(talkedCookie) : 0;
+
+  function changeSpeed(event) {
+    event.preventDefault();
+    if (event.which === 3) {
+      currentSpeedIndex = (currentSpeedIndex === 0) ? speeds.length - 1 : currentSpeedIndex - 1;
+    } else if (event.which === 1) {
+      currentSpeedIndex = (currentSpeedIndex === speeds.length - 1) ? 0 : currentSpeedIndex + 1;
+    }
+    updateSpeed();
+  }
+
+  function updateSpeed() {
+    speedBtn.textContent = "速度：x" + speeds[currentSpeedIndex];
+    speed = speeds[currentSpeedIndex];
+  }
+
+  updateSpeed(); // 初始化速度显示
+
+
+
+if (talked === 0) {
+function showText(text, duration, callback) {
+  const textElement = document.getElementById('text');
+  textElement.innerText = text;
+  if (duration !== Infinity) {
+    setTimeout(() => {
+      textElement.innerText = '';
+      if (callback) {
+        callback();
+      }
+    }, 1 / speed * duration);
+  }
+}
+function showSelect(question, options, callback) {
+  const textElement = document.getElementById('text');
+  textElement.innerText = question;
+  
+  const optionsContainer = document.createElement('div');
+  for (const key in options) {
+    const optionElement = document.createElement('div');
+    optionElement.classList.add('option');
+    optionElement.textContent = options[key];
+    optionElement.addEventListener('click', () => {
+      if (targets[key]) {
+        targets[key]();
+      }
+    });
+    optionsContainer.appendChild(optionElement);
+  }
+  textElement.appendChild(optionsContainer);
+
+  if (callback) {
+    callback();
+  }
+}
+
+function executeNextInstruction(instruction) {
+  if (typeof instruction === 'function') {
+    instruction();
+  }
+}
+const targets = {};
+const instructions = {
+  a1: () => {showText("“有人吗？”", 5000, () => executeNextInstruction(instructions.a2));},
+  a2: () => {showText("你向着虚空问道。", 2000, () => executeNextInstruction(instructions.a3));},
+  a3: () => {showText("窸窸窣窣的声音从看起来不可能存在生命的黑暗中传来。", 5000, () => executeNextInstruction(instructions.a4));},
+  a4: () => {showText("“我是□□”，一个声音回答道。", 2500, () => executeNextInstruction(instructions.a5));},
+  a5: () => {showText("你决定问它…", 1000, () => executeNextInstruction(instructions.as));},
+  as: () => {showSelect("你决定问它…", {"as1": "“你是谁？”", "as2": "“介绍下自己吧”", "as3": "“你喜欢什么或喜欢做什么？”", "as4": "“你有病吗？”"});},
+  bs: () => {showSelect("你决定问它…", {"as1": "“你是谁？”", "as2": "“介绍下自己吧”", "as3": "“你喜欢什么或喜欢做什么？”", "as4": "“你有病吗？”", "bs1": "“我没有想问的了”"});},
+  ba1: () => {showText("“我是□□”，那个声音回答道。", 2000, () => executeNextInstruction(instructions.bs));},
+  bb1: () => {showText("“嗯…”它说。", 1500, () => executeNextInstruction(instructions.bb2));},
+  bb2: () => {showText("“说实在的吧，其实”", 2200, () => executeNextInstruction(instructions.bb3));},
+  bb3: () => {showText("“我对自己没多少了解”", 2300, () => executeNextInstruction(instructions.bb4));},
+  bb4: () => {showText("“你信吧？”", 1300, () => executeNextInstruction(instructions.bb5));},
+  bb5: () => {showText("“所以你还是换个问题吧”", 1800, () => executeNextInstruction(instructions.bs));},
+  bc1: () => {showText("“以我对自己不多的了解”它说道。", 2500, () => executeNextInstruction(instructions.bc2));},
+  bc2: () => {showText("“我确信我应该会喜欢一些有趣而扣人心弦的故事、小说等”", 4000, () => executeNextInstruction(instructions.bc3));},
+  bc3: () => {showText("“以及美丽的画作、广阔神秘的宇宙和充满活力的事物”", 3200, () => executeNextInstruction(instructions.bc4));},
+  bc4: () => {showText("“我还会画画、写写字什么的”", 2800, () => executeNextInstruction(instructions.bc5));},
+  bc5: () => {showText("“不过我现在没办法给你露一手”", 3200, () => executeNextInstruction(instructions.bs));},
+  bd1: () => {showText("“正确！”它快速答道。", 1600, () => executeNextInstruction(instructions.bd2));},
+  bd2: () => {showText("“我有一种病，当别人对我说一样的话时，我总是给予同样的回答”", 5000, () => executeNextInstruction(instructions.bd3));},
+  bd3: () => {showText("“开个玩笑，其实是因为虚空的通讯等一系列困难的问题，准确的说虚空其实算是半个留言电话”", 6500, () => executeNextInstruction(instructions.bd4));},
+  bd4: () => {showText("“希望你能了解其中的道理”", 2500, () => executeNextInstruction(instructions.bs));},
+  c1: () => {showText("“好罢”它说道。", 1600, () => executeNextInstruction(instructions.c2));},
+  c2: () => {showText("“很高兴能够与你聊天”", 2400, () => executeNextInstruction(instructions.c3));},
+  c3: () => {showText("“或许以后我们无法能够再次通过虚空取得与这个我的联系，不过我已经把你当朋友了”", 6000, () => executeNextInstruction(instructions.c4));},
+  c4: () => {showText("“那就再见咯”", 1600, () => executeNextInstruction(instructions.c5));},
+  c5: () => {document.cookie = "talked=1; expires=Fri, 31 Dec 9999 23:59:59 GMT" ;showText("【通讯中断】", Infinity);}
+}
+targets["as1"] = () => executeNextInstruction(instructions.ba1);
+targets["as2"] = () => executeNextInstruction(instructions.bb1);
+targets["as3"] = () => executeNextInstruction(instructions.bc1);
+targets["as4"] = () => executeNextInstruction(instructions.bd1);
+targets["bs1"] = () => executeNextInstruction(instructions.c1);
+executeNextInstruction(instructions.a1);
+} else {
+function showText(text, duration, callback) {
+  const textElement = document.getElementById('text');
+  textElement.innerText = text;
+  if (duration !== Infinity) {
+    setTimeout(() => {
+      textElement.innerText = '';
+      if (callback) {
+        callback();
+      }
+    }, 1 / speed * duration);
+  }
+}
+function showSelect(question, options, callback) {
+  const textElement = document.getElementById('text');
+  textElement.innerText = question;
+  
+  const optionsContainer = document.createElement('div');
+  for (const key in options) {
+    const optionElement = document.createElement('div');
+    optionElement.classList.add('option');
+    optionElement.textContent = options[key];
+    optionElement.addEventListener('click', () => {
+      if (targets[key]) {
+        targets[key]();
+      }
+    });
+    optionsContainer.appendChild(optionElement);
+  }
+  textElement.appendChild(optionsContainer);
+
+  if (callback) {
+    callback();
+  }
+}
+
+function executeNextInstruction(instruction) {
+  if (typeof instruction === 'function') {
+    instruction();
+  }
+}
+const targets = {};
+const instructions = {
+  a1: () => {showText("“有人吗？”", 5000, () => executeNextInstruction(instructions.a2));},
+  a2: () => {showText("你向着虚空问道。", 5000, () => executeNextInstruction(instructions.a3));},
+  a3: () => {showText("什么也没有发生。", Infinity);},
+}
+targets["as1"] = () => executeNextInstruction(instructions.ba1);
+targets["as2"] = () => executeNextInstruction(instructions.bb1);
+targets["as3"] = () => executeNextInstruction(instructions.bc1);
+targets["as4"] = () => executeNextInstruction(instructions.bd1);
+targets["bs1"] = () => executeNextInstruction(instructions.c1);
+executeNextInstruction(instructions.a1);
+};
+
 </script>
+
 </body>
 </html>
