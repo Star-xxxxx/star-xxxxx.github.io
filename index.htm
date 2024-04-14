@@ -16,6 +16,7 @@
     background-color: #fff;
     transition: width 0.05s linear;
     width: 100%; /* 初始宽度 */
+    display: none;
   }
   .button {
     position: fixed;
@@ -42,7 +43,7 @@
     text-align: center;
   }
   .option {
-    color: #999;
+    color: #888;
     text-decoration: underline;
     cursor: pointer;
   }
@@ -57,7 +58,7 @@
 
 <button id="speedBtn" class="button" style="right: 10px;" onmousedown="changeSpeed(event)" oncontextmenu="event.preventDefault();">文字速度：x1</button>
 
-<button id="c2CBtn" class="button" style="left: 10px;" onmousedown="changeC2C(event)" oncontextmenu="event.preventDefault();">点击继续：否</button>
+<button id="autoBtn" class="button" style="left: 10px;" onmousedown="changeauto(event)" oncontextmenu="event.preventDefault();">自动继续：否</button>
 
 
 <div id="text">Loading...</div>
@@ -85,12 +86,16 @@
 
   updateSpeed(); // 初始化速度显示
 
-  var c2C=0
-    function changeC2C() {
-        c2C = c2C === 0 ? 1 : 0;
-        document.getElementById("c2CBtn").innerText = "点击继续：" + (c2C === 1 ? "是" : "否");
+  var auto=0
+    function changeauto() {
+        auto = auto === 0 ? 1 : 0;
+            if (auto === 1) {
+                progressBar.style.display = 'block';
+            } else {
+                progressBar.style.display = 'none';
+            }
+        document.getElementById("autoBtn").innerText = "自动继续：" + (auto === 1 ? "是" : "否");
     }
-
 function getCookie(name) {
     const cookies = document.cookie.split(';');
     for (let i = 0; i < cookies.length; i++) {
@@ -106,9 +111,9 @@ const talkedCookie = getCookie('talked2');
 
 let talked2 = talkedCookie && !isNaN(parseInt(talkedCookie)) ? parseInt(talkedCookie) : 0;
 
-if (talked2 === 0) {
-
 const progressBar = document.getElementById('progress-bar');
+
+if (talked2 === 0) {
 
 function showText(text, callback) {
   const textElement = document.getElementById('text');
@@ -130,7 +135,7 @@ function showText(text, callback) {
     } else {
       clearTimeout(timerId); // 清除字符更新计时器
       elapsedTime = totalTime - elapsedTime; // 使用剩余时间更新elapsedTime
-      if (c2C === 0) {
+      if (auto === 1) {
         progressBarTimerId = setInterval(updateProgressBar, 50); // 启动进度条更新计时器
       }
       progressBarTimerId = setInterval(checkElapsedTime, 50); // 启动检查elapsedTime计时器
@@ -163,7 +168,7 @@ document.addEventListener("mousedown", function(event) {
             }
         }
 
-        if (!isHoveringOnButton && c2C === 1) {
+        if (!isHoveringOnButton) {
             elapsedTime = -1000000;
         }
     }
@@ -183,7 +188,7 @@ document.addEventListener("mousedown", function(event) {
   displayNextCharacter();
 }
 
-function showSelect(question, options, callback) { //以后得加检测选择前字符显示完毕后直接出选项
+function showSelect(question, options, callback) { //以后得加检测选择前字符显示完毕后直接出选项和对结尾检测
   const textElement = document.getElementById('text');
   textElement.innerText = question;
   
@@ -249,9 +254,6 @@ targets["as4"] = () => executeNextInstruction(instructions.bd1);
 targets["bs1"] = () => executeNextInstruction(instructions.c1);
 executeNextInstruction(instructions.a1);
 } else {
-
-const progressBar = document.getElementById('progress-bar');
-
 function showText(text, callback) {
   const textElement = document.getElementById('text');
   textElement.innerText = '';
@@ -272,7 +274,7 @@ function showText(text, callback) {
     } else {
       clearTimeout(timerId); // 清除字符更新计时器
       elapsedTime = totalTime - elapsedTime; // 使用剩余时间更新elapsedTime
-      if (c2C === 0) {
+      if (auto === 1) {
         progressBarTimerId = setInterval(updateProgressBar, 50); // 启动进度条更新计时器
       }
       progressBarTimerId = setInterval(checkElapsedTime, 50); // 启动检查elapsedTime计时器
@@ -305,7 +307,7 @@ document.addEventListener("mousedown", function(event) {
             }
         }
 
-        if (!isHoveringOnButton && c2C === 1) {
+        if (!isHoveringOnButton) {
             elapsedTime = -1000000;
         }
     }
@@ -325,7 +327,7 @@ document.addEventListener("mousedown", function(event) {
   displayNextCharacter();
 }
 
-function showSelect(question, options, callback) { //以后得加检测选择前字符显示完毕后直接出选项
+function showSelect(question, options, callback) { //以后得加检测选择前字符显示完毕后直接出选项和对结尾检测
   const textElement = document.getElementById('text');
   textElement.innerText = question;
   
