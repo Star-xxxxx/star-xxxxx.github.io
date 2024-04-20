@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>???</title>
+<title>-=[?] 未知时空 [?]=-</title>
 <style>
   body {
         background-color: #121418;
@@ -44,8 +44,8 @@
   }
   .option {
     color: #888;
-    text-decoration: underline;
     cursor: pointer;
+    transition: color 0.1s;
   }
     .option:hover {
     color: #fff;
@@ -61,7 +61,7 @@
 <button id="autoBtn" class="button" style="left: 10px;" onmousedown="changeauto(event)" oncontextmenu="event.preventDefault();">自动继续：否</button>
 
 
-<div id="text">Loading...</div>
+<div id="text">[错误 ERROR]</div>
 
 <script>
   var speed=1
@@ -96,6 +96,7 @@
             }
         document.getElementById("autoBtn").innerText = "自动继续：" + (auto === 1 ? "是" : "否");
     }
+
 function getCookie(name) {
     const cookies = document.cookie.split(';');
     for (let i = 0; i < cookies.length; i++) {
@@ -107,38 +108,38 @@ function getCookie(name) {
     return null;
 }
 
-const talkedCookie = getCookie('talked2');
+const talkingProgressCookie = getCookie('talkingProgress');
 
-let talked2 = talkedCookie && !isNaN(parseInt(talkedCookie)) ? parseInt(talkedCookie) : 0;
+let talkingProgress = talkingProgressCookie && !isNaN(parseInt(talkingProgressCookie)) ? parseInt(talkingProgressCookie) : 0;
 
 const progressBar = document.getElementById('progress-bar');
-
-if (talked2 === 0) {
-
-function showText(text, callback) {
+function showText(text, callback, extra) {
   const textElement = document.getElementById('text');
   textElement.innerText = '';
   let currentIndex = 0;
   let elapsedTime = 0;
-  let totalTime = (text.length * 100 + 1200) / speed; // 存储总时长
+  const totalTime = (text.length * 90 + 1300) / speed; // 存储总时长
   let progressBarTimerId; // 进度条更新计时器 ID
-
-  function resetElapsedTime() {
-    elapsedTime = -1000000;
-  }
+  let timerId; // 字符更新计时器 ID
 
   function displayNextCharacter() {
     if (currentIndex < text.length) {
       textElement.innerText += text[currentIndex];
       currentIndex++;
-      timerId = setTimeout(displayNextCharacter, 1000 / (speed * 12));
+      timerId = setTimeout(displayNextCharacter, 1000 / (speed * 18));
     } else {
       clearTimeout(timerId); // 清除字符更新计时器
       elapsedTime = totalTime - elapsedTime; // 使用剩余时间更新elapsedTime
-      if (auto === 1) {
-        progressBarTimerId = setInterval(updateProgressBar, 50); // 启动进度条更新计时器
+      if (extra === 1) {
+        callback();
+      } else if (extra === 2) {
+        progressBar.style.display = 'none';
+      } else {
+        if (auto === 1) {
+          progressBarTimerId = setInterval(updateProgressBar, 50); // 启动进度条更新计时器
+        }
+        progressBarTimerId = setInterval(checkElapsedTime, 50);
       }
-      progressBarTimerId = setInterval(checkElapsedTime, 50); // 启动检查elapsedTime计时器
     }
   }
 
@@ -148,37 +149,55 @@ function showText(text, callback) {
     progressBar.style.width = (progress * 108) + '%';
   }
 
-document.addEventListener("mousedown", function(event) {
+  document.addEventListener("mousedown", function(event) {
     // 检查是否是鼠标左键按下事件（左键的keyCode是1）
     if (event.button === 0) {
-        // 获取鼠标指针的坐标
-        var mouseX = event.clientX;
-        var mouseY = event.clientY;
+      // 获取鼠标指针的坐标
+      var mouseX = event.clientX;
+      var mouseY = event.clientY;
 
-        // 检查鼠标指针是否悬浮在任何按钮上
-        var buttons = document.getElementsByTagName("button");
-        var isHoveringOnButton = false;
-        for (var i = 0; i < buttons.length; i++) {
-            var button = buttons[i];
-            var buttonRect = button.getBoundingClientRect();
-            if (mouseX >= buttonRect.left && mouseX <= buttonRect.right &&
-                mouseY >= buttonRect.top && mouseY <= buttonRect.bottom) {
-                isHoveringOnButton = true;
-                break;
+      // 检查鼠标指针是否悬浮在任何按钮上
+      var buttons = document.getElementsByTagName("button");
+      var isHoveringOnButton = false;
+      for (var i = 0; i < buttons.length; i++) {
+        var button = buttons[i];
+        var buttonRect = button.getBoundingClientRect();
+        if (mouseX >= buttonRect.left && mouseX <= buttonRect.right &&
+          mouseY >= buttonRect.top && mouseY <= buttonRect.bottom) {
+          isHoveringOnButton = true;
+          break;
+        }
+      }
+
+      if (!isHoveringOnButton) {
+        if (currentIndex < text.length) {
+          // 如果在文本显示完之前点击了，立即显示所有字符
+          textElement.innerText = text;
+          currentIndex = text.length;
+          clearTimeout(timerId); // 清除字符更新计时器
+          elapsedTime = totalTime - elapsedTime; // 使用剩余时间更新elapsedTime
+          if (extra === 1) {
+            callback();
+          } else if (extra === 2) {
+            progressBar.style.display = 'none';
+          } else {
+            if (auto === 1) {
+              progressBarTimerId = setInterval(updateProgressBar, 50); // 启动进度条更新计时器
             }
+            progressBarTimerId = setInterval(checkElapsedTime, 50);
+          }
+        } else {
+          // 如果在文本显示完之后点击了，立即完成进度条和文本显示
+          elapsedTime = -1000000;
         }
-
-        if (!isHoveringOnButton) {
-            elapsedTime = -1000000;
-        }
+      }
     }
-});
-
+  });
 
   function checkElapsedTime() {
     if (elapsedTime <= -200) {
       clearInterval(progressBarTimerId); // 停止进度条更新计时器
-        progressBar.style.width = "100%";
+      progressBar.style.width = "100%";
       textElement.innerText = '';
       if (callback) {
         callback();
@@ -188,188 +207,95 @@ document.addEventListener("mousedown", function(event) {
   displayNextCharacter();
 }
 
-function showSelect(question, options, callback) { //以后得加检测选择前字符显示完毕后直接出选项和对结尾检测
+function showSelect(question, options) {
   const textElement = document.getElementById('text');
   textElement.innerText = question;
-  
+
   const optionsContainer = document.createElement('div');
   for (const key in options) {
+    const optionText = key; // 获取选项文本
+    const optionAction = options[key]; // 获取选项对应的函数
+
     const optionElement = document.createElement('div');
     optionElement.classList.add('option');
-    optionElement.textContent = options[key];
+    optionElement.textContent = optionText;
+
     optionElement.addEventListener('click', () => {
-      if (targets[key]) {
-        targets[key]();
-      }
+      optionAction(); // 点击时执行函数
     });
+
+    optionElement.addEventListener('touchstart', () => {
+      optionAction(); // 触摸时执行函数
+    });
+
     optionsContainer.appendChild(optionElement);
   }
-  textElement.appendChild(optionsContainer);
-
-  if (callback) {
-    callback();
-  }
-}
-
-function executeNextInstruction(instruction) {
-  if (typeof instruction === 'function') {
-    instruction();
-  }
-}
-
-const targets = {};
-const instructions = {
-  a1: () => {showText("“有人吗？”", () => executeNextInstruction(instructions.a2));},
-  a2: () => {showText("你向着虚空问道。", () => executeNextInstruction(instructions.a3));},
-  a3: () => {showText("窸窸窣窣的声音从看起来不可能存在生命的黑暗中传来。", () => executeNextInstruction(instructions.a4));},
-  a4: () => {showText("“我是□□”，一个声音回答道。", () => executeNextInstruction(instructions.a5));},
-  a5: () => {showText("你决定问它…", () => executeNextInstruction(instructions.as));},
-  as: () => {showSelect("你决定问它…", {"as1": "“你是谁？”", "as2": "“介绍下自己吧”", "as3": "“你喜欢什么或喜欢做什么？”", "as4": "“你有病吗？”"});},
-  bs: () => {showSelect("你决定问它…", {"as1": "“你是谁？”", "as2": "“介绍下自己吧”", "as3": "“你喜欢什么或喜欢做什么？”", "as4": "“你有病吗？”", "bs1": "“我没有想问的了”"});},
-  ba1: () => {showText("“我是□□”，那个声音回答道。", () => executeNextInstruction(instructions.bs));},
-  bb1: () => {showText("“嗯…”它说。", () => executeNextInstruction(instructions.bb2));},
-  bb2: () => {showText("“说实在的吧，其实”", () => executeNextInstruction(instructions.bb3));},
-  bb3: () => {showText("“我对自己没多少了解”", () => executeNextInstruction(instructions.bb4));},
-  bb4: () => {showText("“你信吧？”", () => executeNextInstruction(instructions.bb5));},
-  bb5: () => {showText("“所以你还是换个问题吧”", () => executeNextInstruction(instructions.bs));},
-  bc1: () => {showText("“以我对自己不多的了解”它说道。", () => executeNextInstruction(instructions.bc2));},
-  bc2: () => {showText("“我确信我应该会喜欢一些有趣而扣人心弦的故事、小说等”", () => executeNextInstruction(instructions.bc3));},
-  bc3: () => {showText("“以及美丽的画作、广阔神秘的宇宙和充满活力的事物”", () => executeNextInstruction(instructions.bc4));},
-  bc4: () => {showText("“我还会画画、写写字什么的”", () => executeNextInstruction(instructions.bc5));},
-  bc5: () => {showText("“不过我现在没办法给你露一手”", () => executeNextInstruction(instructions.bs));},
-  bd1: () => {showText("“正确！”它快速答道。", () => executeNextInstruction(instructions.bd2));},
-  bd2: () => {showText("“我有一种病，当别人对我说一样的话时，我总是给予同样的回答”", () => executeNextInstruction(instructions.bd3));},
-  bd3: () => {showText("“开个玩笑，其实是因为虚空的通讯等一系列困难的问题，准确的说虚空其实算是半个留言电话”", () => executeNextInstruction(instructions.bd4));},
-  bd4: () => {showText("“希望你能了解其中的道理”", () => executeNextInstruction(instructions.bs));},
-  c1: () => {showText("“好罢”它说道。", () => executeNextInstruction(instructions.c2));},
-  c2: () => {showText("“很高兴能够与你聊天”", () => executeNextInstruction(instructions.c3));},
-  c3: () => {showText("“或许以后我们无法能够再次通过虚空取得与这个我的联系，不过我已经把你当朋友了”", () => executeNextInstruction(instructions.c4));},
-  c4: () => {showText("“那就再见咯”", () => executeNextInstruction(instructions.c5));},
-  c5: () => {document.cookie = "talked2=1; expires=Fri, 31 Dec 9999 23:59:59 GMT" ;showText("【通讯中断】");}
-}
-targets["as1"] = () => executeNextInstruction(instructions.ba1);
-targets["as2"] = () => executeNextInstruction(instructions.bb1);
-targets["as3"] = () => executeNextInstruction(instructions.bc1);
-targets["as4"] = () => executeNextInstruction(instructions.bd1);
-targets["bs1"] = () => executeNextInstruction(instructions.c1);
-executeNextInstruction(instructions.a1);
-} else {
-function showText(text, callback) {
-  const textElement = document.getElementById('text');
-  textElement.innerText = '';
-  let currentIndex = 0;
-  let elapsedTime = 0;
-  let totalTime = (text.length * 100 + 1200) / speed; // 存储总时长
-  let progressBarTimerId; // 进度条更新计时器 ID
-
-  function resetElapsedTime() {
-    elapsedTime = -1000000;
-  }
-
-  function displayNextCharacter() {
-    if (currentIndex < text.length) {
-      textElement.innerText += text[currentIndex];
-      currentIndex++;
-      timerId = setTimeout(displayNextCharacter, 1000 / (speed * 12));
-    } else {
-      clearTimeout(timerId); // 清除字符更新计时器
-      elapsedTime = totalTime - elapsedTime; // 使用剩余时间更新elapsedTime
-      if (auto === 1) {
-        progressBarTimerId = setInterval(updateProgressBar, 50); // 启动进度条更新计时器
-      }
-      progressBarTimerId = setInterval(checkElapsedTime, 50); // 启动检查elapsedTime计时器
-    }
-  }
-
-  function updateProgressBar() {
-    elapsedTime -= 50 * speed; // 更新elapsedTime
-    const progress = elapsedTime / totalTime; // 进度
-    progressBar.style.width = (progress * 108) + '%';
-  }
-
-document.addEventListener("mousedown", function(event) {
-    // 检查是否是鼠标左键按下事件（左键的keyCode是1）
-    if (event.button === 0) {
-        // 获取鼠标指针的坐标
-        var mouseX = event.clientX;
-        var mouseY = event.clientY;
-
-        // 检查鼠标指针是否悬浮在任何按钮上
-        var buttons = document.getElementsByTagName("button");
-        var isHoveringOnButton = false;
-        for (var i = 0; i < buttons.length; i++) {
-            var button = buttons[i];
-            var buttonRect = button.getBoundingClientRect();
-            if (mouseX >= buttonRect.left && mouseX <= buttonRect.right &&
-                mouseY >= buttonRect.top && mouseY <= buttonRect.bottom) {
-                isHoveringOnButton = true;
-                break;
-            }
-        }
-
-        if (!isHoveringOnButton) {
-            elapsedTime = -1000000;
-        }
-    }
-});
-
-
-  function checkElapsedTime() {
-    if (elapsedTime <= -200) {
-      clearInterval(progressBarTimerId); // 停止进度条更新计时器
-        progressBar.style.width = "100%";
-      textElement.innerText = '';
-      if (callback) {
-        callback();
-      }
-    }
-  }
-  displayNextCharacter();
-}
-
-function showSelect(question, options, callback) { //以后得加检测选择前字符显示完毕后直接出选项和对结尾检测
-  const textElement = document.getElementById('text');
-  textElement.innerText = question;
   
-  const optionsContainer = document.createElement('div');
-  for (const key in options) {
-    const optionElement = document.createElement('div');
-    optionElement.classList.add('option');
-    optionElement.textContent = options[key];
-    optionElement.addEventListener('click', () => {
-      if (targets[key]) {
-        targets[key]();
-      }
-    });
-    optionsContainer.appendChild(optionElement);
-  }
   textElement.appendChild(optionsContainer);
-
-  if (callback) {
-    callback();
+}
+function eNI(In) { 
+  if (typeof In === 'function') {
+    In();
   }
 }
 
-function executeNextInstruction(instruction) {
-  if (typeof instruction === 'function') {
-    instruction();
-  }
-}
-
-const targets = {};
-const instructions = {
-  a1: () => {showText("“有人吗？”", () => executeNextInstruction(instructions.a2));},
-  a2: () => {showText("你向着虚空问道。", () => executeNextInstruction(instructions.a3));},
-  a3: () => {showText("但什么都没有发生。");},
-
-}
-targets["as1"] = () => executeNextInstruction(instructions.ba1);
-targets["as2"] = () => executeNextInstruction(instructions.bb1);
-targets["as3"] = () => executeNextInstruction(instructions.bc1);
-targets["as4"] = () => executeNextInstruction(instructions.bd1);
-targets["bs1"] = () => executeNextInstruction(instructions.c1);
-executeNextInstruction(instructions.a1);
+const Ins = {
+  a1: () => {document.cookie = "talkingProgress=1; expires=Fri, 31 Dec 9999 23:59:59 GMT" ;showText("“有人吗？”", a2);},
+  a2: () => {showText("你向着虚空问道。", Ins.a3);},
+  a3: () => {showText("窸窸窣窣的声音在看起来不可能存在生命的黑暗中回荡着。", a4);},
+  a4: () => {showText("“我是□□。”一个未知的声音回答道。", Ins.a5);},
+  a5: () => {showText("你决定问它…", Ins.as, 1);},
+  aa1: () => {showText("“有人吗？”", Ins.aa2);},
+  aa2: () => {showText("你向着虚空问道。", Ins.aa3);},
+  aa3: () => {showText("窸窸窣窣的声音在看起来不可能存在生命的黑暗中回荡着。", Ins.aa4);},
+  aa4: () => {showText("“我是□□。”一个未知的声音回答道。", Ins.aa5);},
+  aa5: () => {showText("“这声疑问听着有点耳熟。”那个声音说。", Ins.aa6);},
+  aa6: () => {showText("“算了，不管了，反正我是□□。”", Ins.aa7);},
+  aa7: () => {showText("你决定问它……", Ins.as, 1);},
+  ab1: () => {showText("“有人吗？”", Ins.ab2);},
+  ab2: () => {showText("你向着虚空问道。", Ins.ab3);},
+  ab3: () => {showText("“有！我在这里！”那个声音回答道。", Ins.ab4);},
+  ab4: () => {showText("“我是□□，上回你怎么还没和我说完就跑了？”它说。", Ins.ab5);},
+  ab5: () => {showText("“你是想重新和我交流交流？”", Ins.ab6);},
+  ab6: () => {showText("“当然可以，请来吧。”", Ins.ab7);},
+  ab7: () => {showText("你决定问它……", Ins.as, 1);},
+  ac1: () => {showText("“有人吗？”", Ins.ac2);},
+  ac2: () => {showText("你再次向着虚空问道。", Ins.ac3);},
+  ac3: () => {showText("什么都没有发生。", Ins.ac3, 2);},
+  as: () => {document.cookie = "talkingProgress=2; expires=Fri, 31 Dec 9999 23:59:59 GMT" ;showSelect("你决定问它…", {"“你是谁？”": Ins.ba1,"“介绍下自己吧。”": Ins.bb1,"“你喜欢什么或喜欢做什么？”": Ins.bc1, "“你有病吗？”": Ins.bd1});},
+  bs: () => {showSelect("你决定问它…", {"“你是谁？”": Ins.ba1,"“介绍下自己吧。”": Ins.bb1,"“你喜欢什么或喜欢做什么？”": Ins.bc1, "“你有病吗？”": Ins.bd1, "“我没有想问的了。”": Ins.c1});},
+  ba1: () => {showText("“我是□□。”那个声音回答道。", Ins.bs);},
+  bb1: () => {showText("“嗯……”它说。", Ins.bb2);},
+  bb2: () => {showText("“说实在的吧，其实，”", Ins.bb3);},
+  bb3: () => {showText("“我对自己没多少了解。”", Ins.bb4);},
+  bb4: () => {showText("“你信吧？”", Ins.bb5);},
+  bb5: () => {showText("“所以你还是换个问题吧。”", Ins.bs);},
+  bc1: () => {showText("“以我对自己不多的了解，”它说道。", Ins.bc2);},
+  bc2: () => {showText("“我确信我应该会喜欢一些有趣而扣人心弦的故事、小说等，”", Ins.bc3);},
+  bc3: () => {showText("“以及美丽的画作、广阔神秘的宇宙和充满活力的事物。”", Ins.bc4);},
+  bc4: () => {showText("“我还会画画、写写字什么的，”", Ins.bc5);},
+  bc5: () => {showText("“不过我现在没办法给你露一手……”", Ins.bs);},
+  bd1: () => {showText("“正确！”它快速答道。", Ins.bd2);},
+  bd2: () => {showText("“我有一种病，当别人对我说一样的话时，我总是给予同样的回答。”", Ins.bd3);},
+  bd3: () => {showText("“开个玩笑，其实是因为虚空的通讯等一系列困难的问题，准确的说虚空其实算是半个留言电话。”", Ins.bd4);},
+  bd4: () => {showText("“希望你能了解其中的道理。”", Ins.bs);},
+  c1: () => {showText("“好罢。”它说道。", Ins.c2);},
+  c2: () => {showText("“很高兴能够与你聊天。”", Ins.c3);},
+  c3: () => {showText("“或许以后我们无法能够再次通过虚空取得与这个我的联系，不过我已经把你当朋友了。”", Ins.c4);},
+  c4: () => {showText("“那就再见咯！”", Ins.c5);}, //以后加一同游玩剧情 并在cookie时减少独立占比
+  c5: () => {document.cookie = "talkingProgress=-1; expires=Fri, 31 Dec 9999 23:59:59 GMT" ;showText("【通讯中断】", Ins.c5, 2);}
 };
+
+if (talkingProgress === -1 ) {
+  eNI(Ins.ac1);
+} else if (talkingProgress === 1 ) {
+  eNI(Ins.aa1);
+} else if (talkingProgress === 2 ) {
+  eNI(Ins.ab1);
+} else {
+  eNI(Ins.a1);
+}
+
 </script>
 
 </body>
