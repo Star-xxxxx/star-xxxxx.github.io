@@ -240,9 +240,9 @@ function eNI(In) {
 }
 
 const Ins = {
-  a1: () => {document.cookie = "talkingProgress=1; expires=Fri, 31 Dec 9999 23:59:59 GMT" ;showText("“有人吗？”", a2);},
+  a1: () => {document.cookie = "talkingProgress=1; expires=Fri, 31 Dec 9999 23:59:59 GMT" ;showText("“有人吗？”", Ins.a2);},
   a2: () => {showText("你向着虚空问道。", Ins.a3);},
-  a3: () => {showText("窸窸窣窣的声音在看起来不可能存在生命的黑暗中回荡着。", a4);},
+  a3: () => {showText("窸窸窣窣的声音在看起来不可能存在生命的黑暗中回荡着。", Ins.a4);},
   a4: () => {showText("“我是□□。”一个未知的声音回答道。", Ins.a5);},
   a5: () => {showText("你决定问它…", Ins.as, 1);},
   aa1: () => {showText("“有人吗？”", Ins.aa2);},
@@ -286,12 +286,16 @@ const Ins = {
   c5: () => {document.cookie = "talkingProgress=-1; expires=Fri, 31 Dec 9999 23:59:59 GMT" ;showText("【通讯中断】", Ins.c5, 2);}
 };
 
-if (talkingProgress === -1 ) {
-  eNI(Ins.ac1);
-} else if (talkingProgress === 1 ) {
-  eNI(Ins.aa1);
-} else if (talkingProgress === 2 ) {
-  eNI(Ins.ab1);
+if (typeof talkingProgress !== 'undefined') {
+  if (talkingProgress === -1 ) {
+    eNI(Ins.ac1);
+  } else if (talkingProgress === 1 ) {
+    eNI(Ins.aa1);
+  } else if (talkingProgress === 2 ) {
+    eNI(Ins.ab1);
+  } else {
+    eNI(Ins.a1);
+  }
 } else {
   eNI(Ins.a1);
 }
