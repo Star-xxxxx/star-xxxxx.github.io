@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        body {
+            background-color: #F0E000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(125, 9px);
+            grid-template-rows: repeat(52, 9px);
+            gap: 0;
+        }
+
+        .box {
+            width: 6px;
+            height: 6px;
+            background-color: #F0E000;
+            border: 1px solid #FFFFFF;
+        }
+
+        .countdown {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 360px;
+            z-index: 100;
+        }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="container"></div>
+    <div class="countdown" id="countdown">5</div>
+
+    <script>
+        const container = document.getElementById("container");
+
+for (let i = 0; i < 6429; i++) {
+    const box = document.createElement("div");
+    box.className = "box";
+    
+    if (i < 4794) {
+        box.style.backgroundColor = "#95C5FA";
+    } else if (i < 4805) {
+        box.style.backgroundColor = "#A9FA94";
+    } else if (i < 4865) {
+        box.style.backgroundColor = "#C39CFA";
+    } else if (i < 6429) {
+        box.style.backgroundColor = "#FD98B2";
+    }
+    
+    container.appendChild(box);
+}
+
+        // Countdown
+        let countdown = 5;
+        const countdownElement = document.getElementById("countdown");
+        const interval = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            if (countdown === 0) {
+                clearInterval(interval);
+                countdownElement.style.display = "none";
+
+const boxesToRemove = document.querySelectorAll('.box');
+
+boxesToRemove.forEach(box => {
+    if (box.style.backgroundColor === "rgb(253, 152, 178)") {
+        box.parentNode.removeChild(box);
+    }
+});
+
+            }
+        }, 1000);
+    </script>
+</body>
+
+</html>
