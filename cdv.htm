@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字符对比</title>
+    <style>
+        body {
+            background-color: #222;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            margin-right: 20px;
+        }
+        .controls input {
+            margin-bottom: 10px;
+            padding: 5px;
+            font-size: 16px;
+        }
+        .display-area {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+            overflow: hidden;
+        }
+        .char1, .char2 {
+            position: absolute;
+            font-weight: bold;
+            mix-blend-mode: screen;
+        }
+        .char1 {
+            color: #0FF;
+        }
+        .char2 {
+            color: #F0F;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <input type="text" id="char1-input" placeholder="原字符">
+            <input type="text" id="char2-input" placeholder="对比字符">
+            <input type="number" id="char2-offset-x" placeholder="对比字符X偏移">
+            <input type="number" id="char2-offset-y" placeholder="对比字符Y偏移">
+            <input type="number" id="char2-size-offset" placeholder="对比字符大小偏移">
+            <input type="number" id="char2-rotation" placeholder="对比字符旋转">
+            <input type="number" id="font-size" placeholder="字符大小">
+        </div>
+        <div class="display-area">
+            <div class="char1" id="char1"></div>
+            <div class="char2" id="char2"></div>
+        </div>
+    </div>
+
+    <script>
+        const char1Input = document.getElementById('char1-input');
+        const char2Input = document.getElementById('char2-input');
+        const char2OffsetX = document.getElementById('char2-offset-x');
+        const char2OffsetY = document.getElementById('char2-offset-y');
+        const char2SizeOffset = document.getElementById('char2-size-offset');
+        const char2Rotation = document.getElementById('char2-rotation');
+        const fontSizeInput = document.getElementById('font-size');
+
+        const char1 = document.getElementById('char1');
+        const char2 = document.getElementById('char2');
+
+        function updateDisplay() {
+            const char1Value = char1Input.value || '5';
+            const char2Value = char2Input.value || 'S';
+            const char2XOffset = char2OffsetX.value || 0;
+            const char2YOffset = char2OffsetY.value || 0;
+            const sizeOffset = char2SizeOffset.value || 0;
+            const rotation = char2Rotation.value || 0;
+            const fontSize = fontSizeInput.value ? parseInt(fontSizeInput.value) : 40;
+
+            char1.textContent = char1Value;
+            char2.textContent = char2Value;
+
+            char1.style.fontSize = `${fontSize}px`;
+            char2.style.fontSize = `${fontSize + parseInt(sizeOffset)}px`;
+
+            char2.style.transform = `translate(${char2XOffset}px, ${char2YOffset}px) rotate(${rotation}deg)`;
+        }
+
+        char1Input.addEventListener('input', updateDisplay);
+        char2Input.addEventListener('input', updateDisplay);
+        char2OffsetX.addEventListener('input', updateDisplay);
+        char2OffsetY.addEventListener('input', updateDisplay);
+        char2SizeOffset.addEventListener('input', updateDisplay);
+        char2Rotation.addEventListener('input', updateDisplay);
+        fontSizeInput.addEventListener('input', updateDisplay);
+
+        updateDisplay();
+    </script>
+</body>
+</html>
