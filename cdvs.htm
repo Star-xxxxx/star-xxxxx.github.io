@@ -115,7 +115,7 @@
 
 <!-- <label for="overlap-color">重叠颜色：</label><input type="color" id="overlap-color" value="#FFFFFF"> -->
 
-    <button id="export-button">导出截图</button>
+<!-- <button id="export-button">导出截图</button> -->
 </div>
 
         <div class="display-area" id="display-area">
@@ -145,7 +145,7 @@
         const char2Font = document.getElementById('char2-font');
         const char2Color = document.getElementById('char2-color');
         //const overlapColor = document.getElementById('overlap-color');
-        const exportButton = document.getElementById('export-button');
+        //const exportButton = document.getElementById('export-button');
 
         const char1 = document.getElementById('char1');
         const char2 = document.getElementById('char2');
@@ -213,7 +213,7 @@
             char2.style.transform = `translate(${char2XOffset}px, ${char2YOffset}px) scale(${char2XScale}, ${char2YScale}) rotate(${char2Rotate}deg)`;
         }
 
-
+/*
         function exportScreenshot() {
             html2canvas(displayArea).then(canvas => {
                 const link = document.createElement('a');
@@ -222,6 +222,7 @@
                 link.click();
             });
         }
+*/
 
         // 添加事件监听
         char1Input.addEventListener('input', updateDisplay);
@@ -245,12 +246,12 @@
         char2Color.addEventListener('input', updateDisplay);
 
         //overlapColor.addEventListener('input', updateDisplay);
-        exportButton.addEventListener('click', exportScreenshot);
+        //exportButton.addEventListener('click', exportScreenshot);
 
         updateDisplay();
     </script>
 
     <!-- 引入html2canvas库 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
 </body>
 </html>
