@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>双字符对比II</title>
+    <style>
+        body {
+            background-color: #222;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            margin-right: 20px;
+        }
+        .controls input, .controls button, .controls select {
+            margin-bottom: 10px;
+            padding: 2px;
+            font-size: 14px;
+        }
+        .controls label {
+          font-size: 14px;
+        }
+        .tabs {
+            display: flex;
+        }
+        .tabs button {
+            flex: 1;
+            padding: 6px;
+            background-color: #444;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .tabs button.active {
+            background-color: #666;
+        }
+        .tab-content {
+            display: none;
+          background-color: #333;
+          flex-direction: column
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .display-area {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+            overflow: hidden;
+        }
+        .char1, .char2 {
+            position: absolute;
+            font-weight: bold;
+            mix-blend-mode: screen;
+    white-space: pre-wrap; /* Preserve whitespace and allow wrapping */
+    overflow: auto; /* Enable overflow handling */
+        }
+        .char1 {
+            color: #0FF;
+        }
+        .char2 {
+            color: #F0F;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+<div class="controls">
+    <label for="char1-input">字符 1：</label>
+    <textarea type="text" id="char1-input" value="e"></textarea>
+
+    <label for="char2-input">字符 2：</label>
+    <textarea type="text" id="char2-input" value="e"></textarea>
+
+    <div class="tabs">
+        <button id="tab-char1" class="active">字符 1</button>
+        <button id="tab-char2">字符 2</button>
+    </div>
+
+    <div id="char1-settings" class="tab-content active">
+        <label for="char1-font-size">字符 1 大小：</label><input type="number" id="char1-font-size" value="320"><br>
+        <label for="char1-offset-x">字符 1 X 偏移：</label><input type="number" id="char1-offset-x" value=""><br>
+        <label for="char1-offset-y">字符 1 Y 偏移：</label><input type="number" id="char1-offset-y" value=""><br>
+        <label for="char1-scale-x">字符 1 X 拉伸倍数：</label><input type="number" id="char1-scale-x" value="" step="0.1"><br>
+        <label for="char1-scale-y">字符 1 Y 拉伸倍数：</label><input type="number" id="char1-scale-y" value="" step="0.1"><br>
+        <label for="char1-rotation">字符 1 旋转：</label><input type="number" id="char1-rotation" value=""><br>
+        <label for="char1-font">字符 1 字体：</label><input type="text" id="char1-font" value=""><br>
+        <label for="char1-color">字符 1 颜色：</label><input type="color" id="char1-color" value="#00FFFF">
+    </div>
+
+    <div id="char2-settings" class="tab-content">
+        <label for="char2-font-size">字符 2 大小：</label><input type="number" id="char2-font-size" value="320"><br>
+        <label for="char2-offset-x">字符 2 X 偏移：</label><input type="number" id="char2-offset-x" value=""><br>
+        <label for="char2-offset-y">字符 2 Y 偏移：</label><input type="number" id="char2-offset-y" value=""><br>
+        <label for="char2-scale-x">字符 2 X 拉伸倍数：</label><input type="number" id="char2-scale-x" value="" step="0.1"><br>
+        <label for="char2-scale-y">字符 2 Y 拉伸倍数：</label><input type="number" id="char2-scale-y" value="" step="0.1"><br>
+        <label for="char2-rotation">字符 2 旋转：</label><input type="number" id="char2-rotation" value=""><br>
+        <label for="char2-font">字符 2 字体：</label><input type="text" id="char2-font" value=""><br>
+        <label for="char2-color">字符 2 颜色：</label><input type="color" id="char2-color" value="#FF00FF">
+    </div>
+
+<!-- <label for="overlap-color">重叠颜色：</label><input type="color" id="overlap-color" value="#FFFFFF"> -->
+
+    <button id="export-button">导出截图</button>
+</div>
+
+        <div class="display-area" id="display-area">
+            <div class="char1" id="char1">A</div>
+            <div class="char2" id="char2">B</div>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const char1Input = document.getElementById('char1-input');
+        const char2Input = document.getElementById('char2-input');
+        const char1OffsetX = document.getElementById('char1-offset-x');
+        const char1OffsetY = document.getElementById('char1-offset-y');
+        const char1ScaleX = document.getElementById('char1-scale-x');
+        const char1ScaleY = document.getElementById('char1-scale-y');
+        const char1Rotation = document.getElementById('char1-rotation');
+        const char1FontSize = document.getElementById('char1-font-size');
+        const char1Font = document.getElementById('char1-font');
+        const char1Color = document.getElementById('char1-color');
+        const char2OffsetX = document.getElementById('char2-offset-x');
+        const char2OffsetY = document.getElementById('char2-offset-y');
+        const char2ScaleX = document.getElementById('char2-scale-x');
+        const char2ScaleY = document.getElementById('char2-scale-y');
+        const char2Rotation = document.getElementById('char2-rotation');
+        const char2FontSize = document.getElementById('char2-font-size');
+        const char2Font = document.getElementById('char2-font');
+        const char2Color = document.getElementById('char2-color');
+        //const overlapColor = document.getElementById('overlap-color');
+        const exportButton = document.getElementById('export-button');
+
+        const char1 = document.getElementById('char1');
+        const char2 = document.getElementById('char2');
+        const displayArea = document.getElementById('display-area');
+        const tabChar1 = document.getElementById('tab-char1');
+        const tabChar2 = document.getElementById('tab-char2');
+        const char1Settings = document.getElementById('char1-settings');
+        const char2Settings = document.getElementById('char2-settings');
+
+        // 切换选项卡
+        function switchTab(tab) {
+            if (tab === 'char1') {
+                tabChar1.classList.add('active');
+                tabChar2.classList.remove('active');
+                char1Settings.classList.add('active');
+                char2Settings.classList.remove('active');
+            } else {
+                tabChar1.classList.remove('active');
+                tabChar2.classList.add('active');
+                char1Settings.classList.remove('active');
+                char2Settings.classList.add('active');
+            }
+        }
+
+        tabChar1.addEventListener('click', () => switchTab('char1'));
+        tabChar2.addEventListener('click', () => switchTab('char2'));
+
+        // 更新显示区域
+        function updateDisplay() {
+            const char1Value = char1Input.value || 'A';
+            const char2Value = char2Input.value || 'B';
+            const char1XOffset = parseFloat(char1OffsetX.value) || 0;
+            const char1YOffset = parseFloat(char1OffsetY.value) || 0;
+            const char1XScale = parseFloat(char1ScaleX.value) || 1;
+            const char1YScale = parseFloat(char1ScaleY.value) || 1;
+            const char1Rotate = parseFloat(char1Rotation.value) || 0;
+            const char1Size = parseInt(char1FontSize.value) || 320;
+            const char1FontFamily = char1Font.value || '3';
+            const char1Col = char1Color.value || '#00FFFF';
+
+            const char2XOffset = parseFloat(char2OffsetX.value) || 0;
+            const char2YOffset = parseFloat(char2OffsetY.value) || 0;
+            const char2XScale = parseFloat(char2ScaleX.value) || 1;
+            const char2YScale = parseFloat(char2ScaleY.value) || 1;
+            const char2Rotate = parseFloat(char2Rotation.value) || 0;
+            const char2Size = parseInt(char2FontSize.value) || 320;
+            const char2FontFamily = char2Font.value || '3';
+            const char2Col = char2Color.value || '#FF00FF';
+
+            //const overlapCol = overlapColor.value || '#FFFFFF';
+
+            char1.textContent = char1Value;
+            char2.textContent = char2Value;
+
+            char1.style.fontSize = `${char1Size}px`;
+            char2.style.fontSize = `${char2Size}px`;
+
+            char1.style.fontFamily = char1FontFamily;
+            char2.style.fontFamily = char2FontFamily;
+
+            char1.style.color = char1Col;
+            char2.style.color = char2Col;
+
+            char1.style.transform = `translate(${char1XOffset}px, ${char1YOffset}px) scale(${char1XScale}, ${char1YScale}) rotate(${char1Rotate}deg)`;
+            char2.style.transform = `translate(${char2XOffset}px, ${char2YOffset}px) scale(${char2XScale}, ${char2YScale}) rotate(${char2Rotate}deg)`;
+        }
+
+
+        function exportScreenshot() {
+            html2canvas(displayArea).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'screenshot.png';
+                link.click();
+            });
+        }
+
+        // 添加事件监听
+        char1Input.addEventListener('input', updateDisplay);
+        char2Input.addEventListener('input', updateDisplay);
+        char1OffsetX.addEventListener('input', updateDisplay);
+        char1OffsetY.addEventListener('input', updateDisplay);
+        char1ScaleX.addEventListener('input', updateDisplay);
+        char1ScaleY.addEventListener('input', updateDisplay);
+        char1Rotation.addEventListener('input', updateDisplay);
+        char1FontSize.addEventListener('input', updateDisplay);
+        char1Font.addEventListener('input', updateDisplay);
+        char1Color.addEventListener('input', updateDisplay);
+
+        char2OffsetX.addEventListener('input', updateDisplay);
+        char2OffsetY.addEventListener('input', updateDisplay);
+        char2ScaleX.addEventListener('input', updateDisplay);
+        char2ScaleY.addEventListener('input', updateDisplay);
+        char2Rotation.addEventListener('input', updateDisplay);
+        char2FontSize.addEventListener('input', updateDisplay);
+        char2Font.addEventListener('input', updateDisplay);
+        char2Color.addEventListener('input', updateDisplay);
+
+        //overlapColor.addEventListener('input', updateDisplay);
+        exportButton.addEventListener('click', exportScreenshot);
+
+        updateDisplay();
+    </script>
+
+    <!-- 引入html2canvas库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</body>
+</html>
