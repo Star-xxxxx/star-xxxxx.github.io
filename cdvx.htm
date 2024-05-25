@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字符对比III</title>
+    <style>
+        body {
+            background-color: #222;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            margin-right: 20px;
+        }
+        .controls input, .controls button, .controls select {
+            margin-bottom: 3px;
+            padding: 1px;
+            font-size: 14px;
+        }
+        .controls label {
+          font-size: 14px;
+        }
+        .tabs {
+            display: flex;
+        }
+        .tabs button {
+            flex: 1;
+            padding: 6px;
+            background-color: #444;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .tabs button.active {
+            background-color: #666;
+        }
+        .tab-content {
+            display: none;
+          background-color: #333;
+          flex-direction: column
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .display-area {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+            overflow: hidden;
+        }
+    .hidden {
+        display: none;
+    }
+        .char1, .char2, .char3 {
+            position: absolute;
+            mix-blend-mode: screen;
+    white-space: pre-wrap; /* Preserve whitespace and allow wrapping */
+    overflow: auto; /* Enable overflow handling */
+        }
+        .char1 {
+            color: #0FF;
+        }
+        .char2 {
+            color: #F0F;
+        }
+        .char3 {
+            color: #00F;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+<div class="controls">
+    <label for="char1-input">字符设置：</label>
+    <textarea type="text" id="char1-input">1</textarea>
+
+    <textarea type="text" id="char2-input">2</textarea>
+
+    <textarea type="text" id="char3-input" class="hidden">3</textarea>
+
+<label><input type="checkbox" id="checkbox-char3">显示第三个字符</label>
+
+    <label for="tabs">选项：</label><div class="tabs">
+        <button id="tab-char1" class="active">第1个</button>
+        <button id="tab-char2">第2个</button>
+        <button id="tab-char3" class="hidden">第3个</button>
+    </div>
+
+    <div id="char1-settings" class="tab-content active">
+        <label><input type="checkbox" id="char1-bold">粗体</label>
+        <label><input type="checkbox" id="char1-italic">斜体</label><br>
+        <label for="char1-font-size">大小：</label><input type="number" id="char1-font-size" value="320"><br>
+        <label for="char1-offset-x">X 偏移：</label><input type="number" id="char1-offset-x" value=""><br>
+        <label for="char1-offset-y">Y 偏移：</label><input type="number" id="char1-offset-y" value=""><br>
+        <label for="char1-scale-x">X 拉伸乘数：</label><input type="number" id="char1-scale-x" value="" step="0.1"><br>
+        <label for="char1-scale-y">Y 拉伸乘数：</label><input type="number" id="char1-scale-y" value="" step="0.1"><br>
+        <label for="char1-skew-x">X 倾斜：</label><input type="number" id="char1-skew-x" value=""><br>
+        <label for="char1-skew-y">Y 倾斜：</label><input type="number" id="char1-skew-y" value=""><br>
+        <label for="char1-rotation">旋转角度：</label><input type="number" id="char1-rotation" value=""><br>
+        <label for="char1-font">字体：</label><input type="text" id="char1-font" value=""><br>
+    </div>
+
+    <div id="char2-settings" class="tab-content">
+        <label><input type="checkbox" id="char2-bold">粗体</label>
+        <label><input type="checkbox" id="char2-italic">斜体</label><br>
+        <label for="char2-font-size">大小：</label><input type="number" id="char2-font-size" value="320"><br>
+        <label for="char2-offset-x">X 偏移：</label><input type="number" id="char2-offset-x" value=""><br>
+        <label for="char2-offset-y">Y 偏移：</label><input type="number" id="char2-offset-y" value=""><br>
+        <label for="char2-scale-x">X 拉伸乘数：</label><input type="number" id="char2-scale-x" value="" step="0.1"><br>
+        <label for="char2-scale-y">Y 拉伸乘数：</label><input type="number" id="char2-scale-y" value="" step="0.1"><br>
+        <label for="char2-skew-x">X 倾斜：</label><input type="number" id="char2-skew-x" value=""><br>
+        <label for="char2-skew-y">Y 倾斜：</label><input type="number" id="char2-skew-y" value=""><br>
+        <label for="char2-rotation">旋转角度：</label><input type="number" id="char2-rotation" value=""><br>
+        <label for="char2-font">字体：</label><input type="text" id="char2-font" value=""><br>
+    </div>
+
+    <div id="char3-settings" class="tab-content">
+        <label><input type="checkbox" id="char3-bold">粗体</label>
+        <label><input type="checkbox" id="char3-italic">斜体</label><br>
+        <label for="char3-font-size">大小：</label><input type="number" id="char3-font-size" value="320"><br>
+        <label for="char3-offset-x">X 偏移：</label><input type="number" id="char3-offset-x" value=""><br>
+        <label for="char3-offset-y">Y 偏移：</label><input type="number" id="char3-offset-y" value=""><br>
+        <label for="char3-scale-x">X 拉伸乘数：</label><input type="number" id="char3-scale-x" value="" step="0.1"><br>
+        <label for="char3-scale-y">Y 拉伸乘数：</label><input type="number" id="char3-scale-y" value="" step="0.1"><br>
+        <label for="char3-skew-x">X 倾斜：</label><input type="number" id="char3-skew-x" value=""><br>
+        <label for="char3-skew-y">Y 倾斜：</label><input type="number" id="char3-skew-y" value=""><br>
+        <label for="char3-rotation">旋转角度：</label><input type="number" id="char3-rotation" value=""><br>
+        <label for="char3-font">字体：</label><input type="text" id="char3-font" value=""><br>
+    </div>
+
+<!-- <label for="overlap-color">重叠颜色：</label><input type="color" id="overlap-color" value="#FFFFFF"> -->
+
+<!-- <button id="export-button">导出截图</button> -->
+</div>
+
+        <div class="display-area" id="display-area">
+            <div class="char1" id="char1">1</div>
+            <div class="char2" id="char2">2</div>
+            <div class="char3 hidden" id="char3">3</div>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const char1Input = document.getElementById('char1-input');
+        const char2Input = document.getElementById('char2-input');
+        const char3Input = document.getElementById('char3-input');
+        const char1OffsetX = document.getElementById('char1-offset-x');
+        const char1OffsetY = document.getElementById('char1-offset-y');
+        const char1ScaleX = document.getElementById('char1-scale-x');
+        const char1ScaleY = document.getElementById('char1-scale-y');
+        const char1SkewX = document.getElementById('char1-skew-x');
+        const char1SkewY = document.getElementById('char1-skew-y');
+        const char1Rotation = document.getElementById('char1-rotation');
+        const char1FontSize = document.getElementById('char1-font-size');
+        const char1Font = document.getElementById('char1-font');
+        const char2OffsetX = document.getElementById('char2-offset-x');
+        const char2OffsetY = document.getElementById('char2-offset-y');
+        const char2ScaleX = document.getElementById('char2-scale-x');
+        const char2ScaleY = document.getElementById('char2-scale-y');
+        const char2SkewX = document.getElementById('char2-skew-x');
+        const char2SkewY = document.getElementById('char2-skew-y');
+        const char2Rotation = document.getElementById('char2-rotation');
+        const char2FontSize = document.getElementById('char2-font-size');
+        const char2Font = document.getElementById('char2-font');
+        const char3OffsetX = document.getElementById('char3-offset-x');
+        const char3OffsetY = document.getElementById('char3-offset-y');
+        const char3ScaleX = document.getElementById('char3-scale-x');
+        const char3ScaleY = document.getElementById('char3-scale-y');
+        const char3SkewX = document.getElementById('char3-skew-x');
+        const char3SkewY = document.getElementById('char3-skew-y');
+        const char3Rotation = document.getElementById('char3-rotation');
+        const char3FontSize = document.getElementById('char3-font-size');
+        const char3Font = document.getElementById('char3-font');
+    const checkbox = document.getElementById('checkbox-char3');
+        //const overlapColor = document.getElementById('overlap-color');
+        //const exportButton = document.getElementById('export-button');
+
+
+        const char1 = document.getElementById('char1');
+        const char2 = document.getElementById('char2');
+        const char3 = document.getElementById('char3');
+        const displayArea = document.getElementById('display-area');
+        const tabChar1 = document.getElementById('tab-char1');
+        const tabChar2 = document.getElementById('tab-char2');
+        const tabChar3 = document.getElementById('tab-char3');
+        const char1Settings = document.getElementById('char1-settings');
+        const char2Settings = document.getElementById('char2-settings');
+        const char3Settings = document.getElementById('char3-settings');
+
+
+        // 切换选项卡
+        function switchTab(tab) {
+            if (tab === 'char1') {
+                tabChar1.classList.add('active');
+                tabChar2.classList.remove('active');
+                tabChar3.classList.remove('active');
+                char1Settings.classList.add('active');
+                char2Settings.classList.remove('active');
+                char3Settings.classList.remove('active');
+            } else if (tab === 'char2') {
+                tabChar1.classList.remove('active');
+                tabChar2.classList.add('active');
+                tabChar3.classList.remove('active');
+                char1Settings.classList.remove('active');
+                char2Settings.classList.add('active');
+                char3Settings.classList.remove('active');
+            } else {
+                tabChar1.classList.remove('active');
+                tabChar2.classList.remove('active');
+                tabChar3.classList.add('active');
+                char1Settings.classList.remove('active');
+                char2Settings.classList.remove('active');
+                char3Settings.classList.add('active');
+            }
+        }
+
+        tabChar1.addEventListener('click', () => switchTab('char1'));
+        tabChar2.addEventListener('click', () => switchTab('char2'));
+        tabChar3.addEventListener('click', () => switchTab('char3'));
+
+
+        // 更新显示区域
+        function updateDisplay() {
+            const char1Value = char1Input.value || '1';
+            const char2Value = char2Input.value || '2';
+            const char3Value = char3Input.value || '3';
+
+
+    if (document.getElementById('char1-bold').checked) {
+        char1.style.fontWeight = 'bold';
+    } else {
+        char1.style.fontWeight = 'normal';
+    }
+
+    if (document.getElementById('char1-italic').checked) {
+        char1.style.fontStyle = 'italic';
+    } else {
+        char1.style.fontStyle = 'normal';
+    }
+
+    if (document.getElementById('char2-bold').checked) {
+        char2.style.fontWeight = 'bold';
+    } else {
+        char2.style.fontWeight = 'normal';
+    }
+
+    if (document.getElementById('char2-italic').checked) {
+        char2.style.fontStyle = 'italic';
+    } else {
+        char2.style.fontStyle = 'normal';
+    }
+
+    if (document.getElementById('char3-bold').checked) {
+        char3.style.fontWeight = 'bold';
+    } else {
+        char3.style.fontWeight = 'normal';
+    }
+
+    if (document.getElementById('char3-italic').checked) {
+        char3.style.fontStyle = 'italic';
+    } else {
+        char3.style.fontStyle = 'normal';
+    }
+
+            const char1XOffset = parseFloat(char1OffsetX.value) || 0;
+            const char1YOffset = parseFloat(char1OffsetY.value) || 0;
+            const char1XScale = parseFloat(char1ScaleX.value) || 1;
+            const char1YScale = parseFloat(char1ScaleY.value) || 1;
+            const char1XSkew = parseFloat(char1SkewX.value) || 0;
+            const char1YSkew = parseFloat(char1SkewY.value) || 0;
+            const char1Rotate = parseFloat(char1Rotation.value) || 0;
+            const char1Size = parseInt(char1FontSize.value) || 320;
+            const char1FontFamily = char1Font.value || '';
+
+            const char2XOffset = parseFloat(char2OffsetX.value) || 0;
+            const char2YOffset = parseFloat(char2OffsetY.value) || 0;
+            const char2XScale = parseFloat(char2ScaleX.value) || 1;
+            const char2YScale = parseFloat(char2ScaleY.value) || 1;
+            const char2XSkew = parseFloat(char2SkewX.value) || 0;
+            const char2YSkew = parseFloat(char2SkewY.value) || 0;
+            const char2Rotate = parseFloat(char2Rotation.value) || 0;
+            const char2Size = parseInt(char2FontSize.value) || 320;
+            const char2FontFamily = char2Font.value || '';
+
+            const char3XOffset = parseFloat(char3OffsetX.value) || 0;
+            const char3YOffset = parseFloat(char3OffsetY.value) || 0;
+            const char3XScale = parseFloat(char3ScaleX.value) || 1;
+            const char3YScale = parseFloat(char3ScaleY.value) || 1;
+            const char3XSkew = parseFloat(char3SkewX.value) || 0;
+            const char3YSkew = parseFloat(char3SkewY.value) || 0;
+            const char3Rotate = parseFloat(char3Rotation.value) || 0;
+            const char3Size = parseInt(char3FontSize.value) || 320;
+            const char3FontFamily = char3Font.value || '';
+
+            //const overlapCol = overlapColor.value || '#FFFFFF';
+
+            char1.textContent = char1Value;
+            char2.textContent = char2Value;
+            char3.textContent = char3Value;
+
+            char1.style.fontSize = `${char1Size}px`;
+            char2.style.fontSize = `${char2Size}px`;
+            char3.style.fontSize = `${char3Size}px`;
+
+            char1.style.fontFamily = char1FontFamily;
+            char2.style.fontFamily = char2FontFamily;
+            char3.style.fontFamily = char3FontFamily;
+
+            char1.style.transform = `translate(${char1XOffset}px, ${char1YOffset}px) scale(${char1XScale}, ${char1YScale}) rotate(${char1Rotate}deg) skew(${char1XSkew}deg, ${char1YSkew}deg)`;
+            char2.style.transform = `translate(${char2XOffset}px, ${char2YOffset}px) scale(${char2XScale}, ${char2YScale}) rotate(${char2Rotate}deg) skew(${char2XSkew}deg, ${char2YSkew}deg)`;
+            char3.style.transform = `translate(${char3XOffset}px, ${char3YOffset}px) scale(${char3XScale}, ${char3YScale}) rotate(${char3Rotate}deg) skew(${char3XSkew}deg, ${char3YSkew}deg)`;
+        }
+
+/*
+        function exportScreenshot() {
+            html2canvas(displayArea).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'screenshot.png';
+                link.click();
+            });
+        }
+*/
+
+        // 添加事件监听
+        char1Input.addEventListener('input', updateDisplay);
+        char2Input.addEventListener('input', updateDisplay);
+        char3Input.addEventListener('input', updateDisplay);
+
+document.getElementById('char1-bold').addEventListener('change', updateDisplay);
+document.getElementById('char1-italic').addEventListener('change', updateDisplay);
+        char1OffsetX.addEventListener('input', updateDisplay);
+        char1OffsetY.addEventListener('input', updateDisplay);
+        char1ScaleX.addEventListener('input', updateDisplay);
+        char1ScaleY.addEventListener('input', updateDisplay);
+        char1SkewX.addEventListener('input', updateDisplay);
+        char1SkewY.addEventListener('input', updateDisplay);
+        char1Rotation.addEventListener('input', updateDisplay);
+        char1FontSize.addEventListener('input', updateDisplay);
+        char1Font.addEventListener('input', updateDisplay);
+
+document.getElementById('char2-bold').addEventListener('change', updateDisplay);
+document.getElementById('char2-italic').addEventListener('change', updateDisplay);
+        char2OffsetX.addEventListener('input', updateDisplay);
+        char2OffsetY.addEventListener('input', updateDisplay);
+        char2ScaleX.addEventListener('input', updateDisplay);
+        char2ScaleY.addEventListener('input', updateDisplay);
+        char2SkewX.addEventListener('input', updateDisplay);
+        char2SkewY.addEventListener('input', updateDisplay);
+        char2Rotation.addEventListener('input', updateDisplay);
+        char2FontSize.addEventListener('input', updateDisplay);
+        char2Font.addEventListener('input', updateDisplay);
+
+document.getElementById('char3-bold').addEventListener('change', updateDisplay);
+document.getElementById('char3-italic').addEventListener('change', updateDisplay);
+        char3OffsetX.addEventListener('input', updateDisplay);
+        char3OffsetY.addEventListener('input', updateDisplay);
+        char3ScaleX.addEventListener('input', updateDisplay);
+        char3ScaleY.addEventListener('input', updateDisplay);
+        char3SkewX.addEventListener('input', updateDisplay);
+        char3SkewY.addEventListener('input', updateDisplay);
+        char3Rotation.addEventListener('input', updateDisplay);
+        char3FontSize.addEventListener('input', updateDisplay);
+        char3Font.addEventListener('input', updateDisplay);
+
+    checkbox.addEventListener('change', function() {
+        // 如果复选框被选中
+        if (this.checked) {
+            // 显示元素
+            char3.classList.remove('hidden');
+            tabChar3.classList.remove('hidden');
+            char3Input.classList.remove('hidden');
+            char1.style.color = "#FF0000";
+            char2.style.color = "#00FF00";
+        } else {
+            // 隐藏元素
+            char3.classList.add('hidden');
+            tabChar3.classList.add('hidden');
+            char3Input.classList.add('hidden');
+            char1.style.color = "#00FFFF";
+            char2.style.color = "#FF00FF";
+        }
+    });
+
+        //overlapColor.addEventListener('input', updateDisplay);
+        //exportButton.addEventListener('click', exportScreenshot);
+
+        updateDisplay();
+checkbox.dispatchEvent(new Event('change'));
+    </script>
+
+    <!-- 引入html2canvas库 -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
+</body>
+</html>
