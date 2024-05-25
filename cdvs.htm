@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>双字符对比II</title>
+    <title>字符对比II</title>
     <style>
         body {
             background-color: #222;
@@ -23,7 +23,7 @@
             margin-right: 20px;
         }
         .controls input, .controls button, .controls select {
-            margin-bottom: 10px;
+            margin-bottom: 7px;
             padding: 2px;
             font-size: 14px;
         }
@@ -97,6 +97,8 @@
         <label for="char1-offset-y">字符 1 Y 偏移：</label><input type="number" id="char1-offset-y" value=""><br>
         <label for="char1-scale-x">字符 1 X 拉伸倍数：</label><input type="number" id="char1-scale-x" value="" step="0.1"><br>
         <label for="char1-scale-y">字符 1 Y 拉伸倍数：</label><input type="number" id="char1-scale-y" value="" step="0.1"><br>
+        <label for="char1-skew-x">字符 1 X 倾斜：</label><input type="number" id="char1-skew-x" value=""><br>
+        <label for="char1-skew-y">字符 1 Y 倾斜：</label><input type="number" id="char1-skew-y" value=""><br>
         <label for="char1-rotation">字符 1 旋转：</label><input type="number" id="char1-rotation" value=""><br>
         <label for="char1-font">字符 1 字体：</label><input type="text" id="char1-font" value=""><br>
         <label for="char1-color">字符 1 颜色：</label><input type="color" id="char1-color" value="#00FFFF">
@@ -108,6 +110,8 @@
         <label for="char2-offset-y">字符 2 Y 偏移：</label><input type="number" id="char2-offset-y" value=""><br>
         <label for="char2-scale-x">字符 2 X 拉伸倍数：</label><input type="number" id="char2-scale-x" value="" step="0.1"><br>
         <label for="char2-scale-y">字符 2 Y 拉伸倍数：</label><input type="number" id="char2-scale-y" value="" step="0.1"><br>
+        <label for="char2-skew-x">字符 2 X 倾斜：</label><input type="number" id="char2-skew-x" value=""><br>
+        <label for="char2-skew-y">字符 2 Y 倾斜：</label><input type="number" id="char2-skew-y" value=""><br>
         <label for="char2-rotation">字符 2 旋转：</label><input type="number" id="char2-rotation" value=""><br>
         <label for="char2-font">字符 2 字体：</label><input type="text" id="char2-font" value=""><br>
         <label for="char2-color">字符 2 颜色：</label><input type="color" id="char2-color" value="#FF00FF">
@@ -132,6 +136,8 @@
         const char1OffsetY = document.getElementById('char1-offset-y');
         const char1ScaleX = document.getElementById('char1-scale-x');
         const char1ScaleY = document.getElementById('char1-scale-y');
+        const char1SkewX = document.getElementById('char1-skew-x');
+        const char1SkewY = document.getElementById('char1-skew-y');
         const char1Rotation = document.getElementById('char1-rotation');
         const char1FontSize = document.getElementById('char1-font-size');
         const char1Font = document.getElementById('char1-font');
@@ -140,6 +146,8 @@
         const char2OffsetY = document.getElementById('char2-offset-y');
         const char2ScaleX = document.getElementById('char2-scale-x');
         const char2ScaleY = document.getElementById('char2-scale-y');
+        const char2SkewX = document.getElementById('char2-skew-x');
+        const char2SkewY = document.getElementById('char2-skew-y');
         const char2Rotation = document.getElementById('char2-rotation');
         const char2FontSize = document.getElementById('char2-font-size');
         const char2Font = document.getElementById('char2-font');
@@ -181,6 +189,8 @@
             const char1YOffset = parseFloat(char1OffsetY.value) || 0;
             const char1XScale = parseFloat(char1ScaleX.value) || 1;
             const char1YScale = parseFloat(char1ScaleY.value) || 1;
+            const char1XSkew = parseFloat(char1SkewX.value) || 0;
+            const char1YSkew = parseFloat(char1SkewY.value) || 0;
             const char1Rotate = parseFloat(char1Rotation.value) || 0;
             const char1Size = parseInt(char1FontSize.value) || 320;
             const char1FontFamily = char1Font.value || '3';
@@ -190,6 +200,8 @@
             const char2YOffset = parseFloat(char2OffsetY.value) || 0;
             const char2XScale = parseFloat(char2ScaleX.value) || 1;
             const char2YScale = parseFloat(char2ScaleY.value) || 1;
+            const char2XSkew = parseFloat(char2SkewX.value) || 0;
+            const char2YSkew = parseFloat(char2SkewY.value) || 0;
             const char2Rotate = parseFloat(char2Rotation.value) || 0;
             const char2Size = parseInt(char2FontSize.value) || 320;
             const char2FontFamily = char2Font.value || '3';
@@ -209,8 +221,8 @@
             char1.style.color = char1Col;
             char2.style.color = char2Col;
 
-            char1.style.transform = `translate(${char1XOffset}px, ${char1YOffset}px) scale(${char1XScale}, ${char1YScale}) rotate(${char1Rotate}deg)`;
-            char2.style.transform = `translate(${char2XOffset}px, ${char2YOffset}px) scale(${char2XScale}, ${char2YScale}) rotate(${char2Rotate}deg)`;
+            char1.style.transform = `translate(${char1XOffset}px, ${char1YOffset}px) scale(${char1XScale}, ${char1YScale}) rotate(${char1Rotate}deg) skew(${char1XSkew}deg, ${char1YSkew}deg)`;
+            char2.style.transform = `translate(${char2XOffset}px, ${char2YOffset}px) scale(${char2XScale}, ${char2YScale}) rotate(${char2Rotate}deg) skew(${char2XSkew}deg, ${char2YSkew}deg)`;
         }
 
 /*
@@ -231,6 +243,8 @@
         char1OffsetY.addEventListener('input', updateDisplay);
         char1ScaleX.addEventListener('input', updateDisplay);
         char1ScaleY.addEventListener('input', updateDisplay);
+        char1SkewX.addEventListener('input', updateDisplay);
+        char1SkewY.addEventListener('input', updateDisplay);
         char1Rotation.addEventListener('input', updateDisplay);
         char1FontSize.addEventListener('input', updateDisplay);
         char1Font.addEventListener('input', updateDisplay);
@@ -240,6 +254,8 @@
         char2OffsetY.addEventListener('input', updateDisplay);
         char2ScaleX.addEventListener('input', updateDisplay);
         char2ScaleY.addEventListener('input', updateDisplay);
+        char2SkewX.addEventListener('input', updateDisplay);
+        char2SkewY.addEventListener('input', updateDisplay);
         char2Rotation.addEventListener('input', updateDisplay);
         char2FontSize.addEventListener('input', updateDisplay);
         char2Font.addEventListener('input', updateDisplay);
