@@ -260,7 +260,7 @@ const Ins = {
   ab6: () => {showText("“当然可以，请来吧。”", Ins.ab7);},
   ab7: () => {showText("你决定问它……", Ins.as, 1);},
   ac1: () => {showText("“有人吗？”", Ins.ac2);},
-  ac2: () => {showText("你再次向着虚空问道。", Ins.ac3);},
+  ac2: () => {showText("你向着虚空问道。", Ins.ac3);},
   ac3: () => {showText("什么都没有发生。", Ins.ac3, 2);},
   as: () => {document.cookie = "talkingProgress=2; expires=Fri, 31 Dec 9999 23:59:59 GMT" ;showSelect("你决定问它…", {"“你是谁？”": Ins.ba1,"“介绍下自己吧。”": Ins.bb1,"“你喜欢什么或喜欢做什么？”": Ins.bc1, "“你有病吗？”": Ins.bd1});},
   bs: () => {showSelect("你决定问它…", {"“你是谁？”": Ins.ba1,"“介绍下自己吧。”": Ins.bb1,"“你喜欢什么或喜欢做什么？”": Ins.bc1, "“你有病吗？”": Ins.bd1, "“我没有想问的了。”": Ins.c1});},
@@ -285,7 +285,10 @@ const Ins = {
   c4: () => {showText("“那就再见咯！”", Ins.c5);}, //以后加一同游玩剧情 并在cookie时减少独立占比
   c5: () => {document.cookie = "talkingProgress=-1; expires=Fri, 31 Dec 9999 23:59:59 GMT" ;showText("【通讯中断】", Ins.c5, 2);}
 };
+  
+eNI(Ins.ac1);
 
+/*
 if (typeof talkingProgress !== 'undefined') {
   if (talkingProgress === -1 ) {
     eNI(Ins.ac1);
@@ -299,6 +302,7 @@ if (typeof talkingProgress !== 'undefined') {
 } else {
   eNI(Ins.a1);
 }
+*/
 
 </script>
 
